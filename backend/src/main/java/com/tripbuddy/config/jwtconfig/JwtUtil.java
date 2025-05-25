@@ -73,7 +73,7 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(user.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 60 * 1000)) // 1 hour
+                .setExpiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000)) // 1 hour
                 .signWith(getSigningKey())
                 .compact();
     }

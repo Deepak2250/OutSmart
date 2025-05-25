@@ -3,8 +3,10 @@ package com.tripbuddy.services;
 import java.util.Collections;
 import java.util.List;
 
+import com.tripbuddy.dto.UserProfileDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,6 +48,13 @@ public class UserService {
         userEntity.setEmail(user.getEmail().toLowerCase());
         // Save the user
         return userRepository.save(userEntity);
+    }
+
+    public UserProfileDTO getUserProfile(Authentication authentication) {
+        String email = authentication.getName();
+        UserEntity user = userRepository.findByEmail(email);
+
+        return UserProfileDTO.builder().email(user.getEmail()).name(user.getUsername()).build();
     }
 
 }
