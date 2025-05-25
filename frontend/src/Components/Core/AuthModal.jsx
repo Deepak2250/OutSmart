@@ -1,4 +1,5 @@
 // components/AuthModal.jsx
+const client_id = '816584322810-trqogmgnpdabc5ctevfr0mtjj3ps5odc.apps.googleusercontent.com';
 import { useState, useContext } from "react";
 import { AuthContext } from "../../context/AuthProvider";
 import { loginUser , registerUser } from "../../services/AuthService";
@@ -14,6 +15,16 @@ const AuthModal = ({ toggleForm }) => {
   const [error, setError] = useState(null);
 
   const { setIsAuthenticated } = useContext(AuthContext);
+const handleGoogleLogin = () => {
+  const googleAuthURL = `https://accounts.google.com/o/oauth2/v2/auth?` +
+    `client_id=816584322810-trqogmgnpdabc5ctevfr0mtjj3ps5odc.apps.googleusercontent.com&` +
+    `redirect_uri=http://localhost:5173/google/callback&` +
+    `response_type=code&` +
+    `scope=openid%20email%20profile&` +
+    `access_type=offline&` +
+    `prompt=consent`;
+  window.location.href = googleAuthURL;
+};
 
   const switchForm = () => {
     setIsLogin(!isLogin);
@@ -141,7 +152,7 @@ const AuthModal = ({ toggleForm }) => {
               type="button"
               className="w-full flex items-center justify-center gap-2 bg-white text-black py-2 px-4 rounded-md border border-gray-300 hover:bg-gray-100 transition-colors mt-2"
               disabled={loading}
-              onClick={() => alert("Google OAuth not implemented")}
+              onClick={handleGoogleLogin}
             >
               <FaGoogle /> Continue with Google
             </button>

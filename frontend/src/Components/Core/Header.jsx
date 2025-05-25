@@ -1,10 +1,12 @@
 import { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthProvider";
 import AuthModal from "./AuthModal";
 
 const Header = () => {
   const [showForm, setShowForm] = useState(false);
   const { isAuthenticated, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const toggleForm = () => setShowForm(!showForm);
 
@@ -17,12 +19,20 @@ const Header = () => {
           </h1>
 
           {isAuthenticated ? (
-            <button
-              onClick={logout}
-              className="bg-black text-white px-4 py-2 rounded-full font-bold hover:bg-gray-800 transition-colors"
-            >
-              Profile
-            </button>
+            <div className="flex gap-4">
+              <button
+                onClick={() => navigate('/profile')}
+                className="bg-black text-white px-4 py-2 rounded-full font-bold hover:bg-gray-800 transition-colors"
+              >
+                Profile
+              </button>
+              <button
+                onClick={logout}
+                className="bg-gray-600 text-white px-4 py-2 rounded-full font-bold hover:bg-gray-800 transition-colors"
+              >
+                Logout
+              </button>
+            </div>
           ) : (
             <button
               onClick={toggleForm}
