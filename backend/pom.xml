@@ -8,11 +8,11 @@
 		<version>3.4.5</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.tripbuddy</groupId>
-	<artifactId>tripbuddy</artifactId>
+	<groupId>com.outsmart</groupId>
+	<artifactId>outsmart</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>tripbuddy</name>
-	<description>Trip Planning app</description>
+	<name>outsmart</name>
+	<description>Resume Analysis App</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -95,6 +95,12 @@
     <version>0.11.5</version>
     <scope>runtime</scope>
 </dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 
 	</dependencies>
 

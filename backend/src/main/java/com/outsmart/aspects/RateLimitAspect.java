@@ -1,0 +1,68 @@
+package com.outsmart.aspects;
+
+import com.outsmart.entities.UserEntity;
+import com.outsmart.entities.UserPlan;
+import com.outsmart.repositories.UserPlanRepository;
+import com.outsmart.repositories.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+@Aspect
+@Component
+@RequiredArgsConstructor
+@Slf4j
+public class RateLimitAspect {
+
+    private final UserRepository userRepository;
+    private final UserPlanRepository userPlanRepository;
+
+    @Pointcut("@annotation(com.outsmart.annotations.RateLimitedFeature)") //This defines where to apply AOP.
+    public void rateLimitedMethods() {}
+
+    @Around("rateLimitedMethods()") /*@Around means: "Do something before and after the annotated method."
+                                     joinPoint.proceed() runs the actual method the user called.*/
+    public Object checkRateLimit(ProceedingJoinPoint joinPoint) throws Throwable {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String email = auth.getName();
+
+        UserEntity user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Optional<UserPlan> optionalPlan = user.getPlans().stream()
+                .filter(UserPlan::getIsActive)
+                .findFirst();
+
+        if (!optionalPlan.isPresent()) {
+            throw new RuntimeException("No active plan found.");
+        }
+
+        UserPlan plan = optionalPlan.get();
+        int used = plan.getTotalUsed();
+        int limit = plan.getPlan().getUploadLimit();
+
+        if (used == limit) {
+            plan.setIsActive(false);
+            plan.setDeactivatedAt(LocalDateTime.now());
+            userPlanRepository.save(plan);
+            throw new RuntimeException("Plan limit exceeded. Upgrade your plan.");
+        }
+
+        plan.setTotalUsed(used + 1);
+        // Save plan via repo if needed
+        userPlanRepository.save(plan);
+
+        return joinPoint.proceed();
+    }
+}
