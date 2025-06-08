@@ -1,3 +1,485 @@
 @import "tailwindcss";
 @import '@fontsource/poppins'; 
 @import '@fontsource/poppins/600.css';
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  /* White Theme - Default */
+  .white {
+    --theme-primary: 262 52% 47%;
+    --theme-primary-foreground: 0 0% 100%;
+    --theme-secondary: 277 100% 76%;
+    --theme-accent: 271 66% 88%;
+    --theme-background: 0 0% 100%;
+    --theme-surface: 0 0% 98%;
+    --theme-border: 220 13% 91%;
+    --theme-text: 0 0% 3%;
+    --theme-muted: 0 0% 96%;
+    --theme-success: 142 76% 36%;
+    --theme-card: 0 0% 100%;
+    --theme-card-text: 0 0% 3%;
+  }
+
+  /* Dark Theme */
+  .dark {
+    --theme-primary: 262 52% 55%;
+    --theme-primary-foreground: 0 0% 100%;
+    --theme-secondary: 277 100% 76%;
+    --theme-accent: 271 66% 88%;
+    --theme-background: 0 0% 0%;
+    --theme-surface: 0 0% 3%;
+    --theme-border: 0 0% 15%;
+    --theme-text: 0 0% 100%;
+    --theme-muted: 0 0% 8%;
+    --theme-success: 142 76% 36%;
+    --theme-card: 0 0% 5%;
+    --theme-card-text: 0 0% 100%;
+  }
+
+  * {
+    @apply border-[hsl(var(--border))];
+  }
+
+  body {
+    @apply bg-[hsl(var(--background))] text-[hsl(var(--foreground))];
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  }
+
+  .theme-bg {
+    background-color: hsl(var(--theme-background));
+  }
+
+  .theme-surface {
+    background-color: hsl(var(--theme-surface));
+  }
+
+  .theme-primary {
+    background-color: hsl(var(--theme-primary));
+    color: hsl(var(--theme-primary-foreground));
+  }
+
+  .theme-secondary {
+    background-color: hsl(var(--theme-secondary));
+  }
+
+  .theme-accent {
+    background-color: hsl(var(--theme-accent));
+  }
+
+  .theme-text {
+    color: hsl(var(--theme-text));
+  }
+
+  .theme-border {
+    border-color: hsl(var(--theme-border));
+  }
+
+  .theme-button {
+    background-color: hsl(var(--theme-surface));
+    border-color: hsl(var(--theme-border));
+    color: hsl(var(--theme-text));
+  }
+
+  .theme-dropdown {
+    background-color: hsl(var(--theme-surface));
+    border-color: hsl(var(--theme-border));
+  }
+
+  .theme-card {
+    background-color: hsl(var(--theme-card));
+    color: hsl(var(--theme-card-text));
+    border-color: hsl(var(--theme-border));
+  }
+
+  /* Fixed logo color - always purple regardless of theme */
+  .logo-color {
+    background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+    color: white !important;
+  }
+
+  /* Dark theme specific overrides */
+  .dark {
+    /* Text colors */
+    .text-black,
+    .text-gray-900,
+    .text-gray-800,
+    .text-gray-700,
+    p,
+    h1, h2, h3, h4, h5, h6 {
+      color: hsl(var(--theme-text)) !important;
+    }
+
+    .text-gray-600 {
+      color: hsl(0 0% 100% / 0.85) !important;
+    }
+
+    .text-gray-500 {
+      color: hsl(0 0% 100% / 0.8) !important;
+    }
+
+    .text-gray-400 {
+      color: hsl(0 0% 100% / 0.7) !important;
+    }
+
+    /* Background colors */
+    .bg-white,
+    .bg-gray-50,
+    .bg-gray-100,
+    .theme-surface,
+    .theme-card {
+      background-color: hsl(var(--theme-surface)) !important;
+  }
+
+    /* Section backgrounds */
+    section,
+    .theme-bg {
+      background-color: hsl(var(--theme-background)) !important;
+    }
+
+    /* Card styles */
+    .theme-card {
+      background-color: hsl(var(--theme-card)) !important;
+    color: hsl(var(--theme-text)) !important;
+  }
+
+    /* Border colors */
+    .border,
+    .border-gray-100,
+    .border-gray-200,
+    .border-gray-300,
+    .theme-border {
+      border-color: hsl(var(--theme-border)) !important;
+  }
+
+    /* Input focus styles */
+    input:focus {
+      border-color: hsl(var(--theme-primary)) !important;
+      box-shadow: 0 0 0 2px hsl(var(--theme-primary) / 0.2) !important;
+  }
+
+    /* Logo and branding */
+    .logo-color {
+      background: linear-gradient(135deg, #8b5cf6, #a855f7) !important;
+      color: white !important;
+    }
+
+    /* Shadows */
+    .shadow-xl {
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.8), 0 10px 10px -5px rgba(0, 0, 0, 0.6) !important;
+  }
+
+    .shadow-2xl {
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9) !important;
+    }
+
+    /* Glass effect */
+    .glass-effect {
+      background: rgba(0, 0, 0, 0.4) !important;
+      backdrop-filter: blur(20px) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+    /* Animated elements */
+    .animate-slide-in-right,
+    .animate-slide-in-left,
+    .animate-slide-up,
+    .animate-slide-down {
+      color: hsl(var(--theme-text)) !important;
+  }
+
+    /* Upload section */
+    [class*="upload"],
+    [class*="resume"] {
+      color: hsl(var(--theme-text)) !important;
+      background-color: hsl(var(--theme-surface)) !important;
+  }
+
+    /* Mission and values sections */
+    [class*="mission"],
+    [class*="values"] {
+      color: hsl(var(--theme-text)) !important;
+      background-color: hsl(var(--theme-card)) !important;
+  }
+
+    /* Footer specific */
+    footer {
+      background: linear-gradient(to bottom, hsl(var(--theme-background)), hsl(0 0% 0%)) !important;
+  }
+
+    .outsmart-logo {
+      filter: brightness(0) invert(1) !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Enhanced Animation Keyframes */
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scale-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slide-up {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-left {
+    0% {
+      opacity: 0;
+      transform: translateX(-100px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-in-right {
+    0% {
+      opacity: 0;
+      transform: translateX(100px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slide-down {
+    0% {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float-left-right {
+    0%, 100% {
+      transform: translateX(-50px);
+    }
+    50% {
+      transform: translateX(50px);
+    }
+  }
+
+  @keyframes float-right-left {
+    0%, 100% {
+      transform: translateX(50px);
+    }
+    50% {
+      transform: translateX(-50px);
+    }
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      box-shadow: 0 0 20px hsl(var(--theme-primary) / 0.3);
+    }
+    50% {
+      box-shadow: 0 0 40px hsl(var(--theme-primary) / 0.6);
+    }
+  }
+
+  @keyframes slide-loop-left {
+    0% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    10%, 90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes slide-loop-right {
+    0% {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    10%, 90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+  }
+
+  @keyframes loading-screen-fade {
+    0% {
+      opacity: 1;
+    }
+    80% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /* Animation Classes */
+  .animate-fade-in {
+    animation: fade-in 0.6s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scale-in 0.4s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.5s ease-out forwards;
+  }
+
+  .animate-slide-in-left {
+    animation: slide-in-left 0.6s ease-out forwards;
+  }
+
+  .animate-slide-in-right {
+    animation: slide-in-right 0.6s ease-out forwards;
+  }
+
+  .animate-slide-down {
+    animation: slide-down 0.5s ease-out forwards;
+  }
+
+  .animate-float-left-right {
+    animation: float-left-right 6s ease-in-out infinite;
+  }
+
+  .animate-float-right-left {
+    animation: float-right-left 6s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite;
+  }
+
+  .animate-slide-loop-left {
+    animation: slide-loop-left 8s ease-in-out infinite;
+  }
+
+  .animate-slide-loop-right {
+    animation: slide-loop-right 8s ease-in-out infinite;
+  }
+
+  .animate-loading-screen {
+    animation: loading-screen-fade 3s ease-in-out forwards;
+  }
+
+  /* Professional Typography */
+  .heading-primary {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+  }
+
+  .heading-secondary {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  .text-professional {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+  }
+
+  /* Utility Classes */
+  .hover-scale {
+    @apply transition-transform duration-300 hover:scale-105;
+  }
+
+  .story-link {
+    @apply relative;
+  }
+
+  .story-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-full h-0.5 bg-current scale-x-0 origin-bottom-right transition-transform duration-300;
+  }
+
+  .story-link:hover::after {
+    @apply scale-x-100 origin-bottom-left;
+  }
+
+  .slide-transition {
+    @apply transition-all duration-500 ease-in-out;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, hsl(var(--theme-primary)), hsl(var(--theme-secondary)));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .glass-effect {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Dark theme adjustments for glass effect */
+  .dark .glass-effect {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
