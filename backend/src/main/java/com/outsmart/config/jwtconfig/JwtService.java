@@ -1,7 +1,7 @@
 package com.outsmart.config.jwtconfig;
 
 import com.outsmart.entities.UserEntity;
-import com.outsmart.repositories.UserRepository;
+import com.outsmart.repositories.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

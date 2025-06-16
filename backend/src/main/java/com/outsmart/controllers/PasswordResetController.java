@@ -1,7 +1,7 @@
 package com.outsmart.controllers;
 
-import com.outsmart.dto.OtpVerificationRequest;
-import com.outsmart.services.PasswordResetService;
+import com.outsmart.payload.features.OtpVerificationRequest;
+import com.outsmart.services.feature.PasswordResetService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +15,7 @@ public class PasswordResetController {
     @Autowired
     private PasswordResetService passwordResetService;
 
+
     @PostMapping("/request-otp")
     public ResponseEntity<String> sendOtp(@RequestBody Map<String, String> body) {
         String email = body.get("email");
@@ -23,6 +24,7 @@ public class PasswordResetController {
     }
 
 
+   // @UserAuditableAction(action = "PASSWORD_CHANGE")
     @PostMapping("/verify-otp")
     public ResponseEntity<?> verifyOtpAndResetPassword(@RequestBody OtpVerificationRequest otpVerificationRequest) {
         boolean success = passwordResetService.verifyOtpAndResetPassword(otpVerificationRequest.getEmail(), otpVerificationRequest.getOtp(), otpVerificationRequest.getNewPassword());

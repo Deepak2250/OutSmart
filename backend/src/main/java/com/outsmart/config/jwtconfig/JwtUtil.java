@@ -21,12 +21,6 @@ public class JwtUtil {
 
     @Value("${jwt}")
     private String SECRET_KEY;
-
-    @PostConstruct
-    public void checkSecret() {
-        System.out.println("JWT Secret: " + SECRET_KEY);
-    }
-
     // Generate the signing key using HMAC SHA algorithm
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());

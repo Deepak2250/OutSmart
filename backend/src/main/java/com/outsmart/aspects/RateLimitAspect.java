@@ -2,16 +2,13 @@ package com.outsmart.aspects;
 
 import com.outsmart.entities.UserEntity;
 import com.outsmart.entities.UserPlan;
-import com.outsmart.repositories.UserPlanRepository;
-import com.outsmart.repositories.UserRepository;
-import jakarta.servlet.http.HttpServletRequest;
+import com.outsmart.repositories.user.UserPlanRepository;
+import com.outsmart.repositories.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.springframework.stereotype.Component;
@@ -28,10 +25,7 @@ public class RateLimitAspect {
     private final UserRepository userRepository;
     private final UserPlanRepository userPlanRepository;
 
-    @Pointcut("@annotation(com.outsmart.annotations.RateLimitedFeature)") //This defines where to apply AOP.
-    public void rateLimitedMethods() {}
-
-    @Around("rateLimitedMethods()") /*@Around means: "Do something before and after the annotated method."
+    @Around("@annotation(com.outsmart.annotations.RateLimitedFeature)") /*@Around means: "Do something before and after the annotated method."
                                      joinPoint.proceed() runs the actual method the user called.*/
     public Object checkRateLimit(ProceedingJoinPoint joinPoint) throws Throwable {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -52,7 +46,7 @@ public class RateLimitAspect {
         int used = plan.getTotalUsed();
         int limit = plan.getPlan().getUploadLimit();
 
-        if (used == limit) {
+        if (used <= limit) {
             plan.setIsActive(false);
             plan.setDeactivatedAt(LocalDateTime.now());
             userPlanRepository.save(plan);
@@ -66,3 +60,13 @@ public class RateLimitAspect {
         return joinPoint.proceed();
     }
 }
+
+/**You need @Around here because:
+
+ You want to block method execution when the user exceeds their plan limit.
+
+ You want full control over when and if the actual method runs.
+
+ You want to update usage counters and maybe modify the response.
+
+ @Around is the only advice type that gives you this power. @Before and others are read-only observers.**/

@@ -1,7 +1,8 @@
 package com.outsmart.controllers;
 
+import com.outsmart.annotations.UserAuditableAction;
 import com.outsmart.dto.JwtAuthResponse;
-import com.outsmart.services.GithubOauthService;
+import com.outsmart.services.auth.GithubOauthService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,6 +21,7 @@ public class GithubOauthController {
     @Autowired
     private GithubOauthService githubOauthService;
 
+    @UserAuditableAction(action = "LOGIN_GITHUB")
     @GetMapping("/callback")
     public ResponseEntity<JwtAuthResponse> handleGithubCallback(@RequestParam("code") String code) {
         String decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8);

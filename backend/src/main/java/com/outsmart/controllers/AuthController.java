@@ -1,5 +1,6 @@
 package com.outsmart.controllers;
 
+import com.outsmart.annotations.UserAuditableAction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -9,9 +10,9 @@ import org.springframework.http.MediaType;
 
 import com.outsmart.config.jwtconfig.JwtService;
 import com.outsmart.dto.JwtAuthResponse;
-import com.outsmart.dto.UserLoginRequest;
-import com.outsmart.dto.UserRegistrationRequest;
-import com.outsmart.services.UserService;
+import com.outsmart.payload.users.UserLoginRequest;
+import com.outsmart.payload.users.UserRegistrationRequest;
+import com.outsmart.services.user.UserService;
 
 @RestController
 @RequestMapping("/api/auth") // Base URL for user-related endpoints
@@ -23,6 +24,7 @@ public class AuthController {
     @Autowired
     private JwtService jwtService;
 
+    @UserAuditableAction(action = "REGISTER")
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@Validated @RequestBody UserRegistrationRequest request) {
         userService.registerUser(request);
@@ -40,6 +42,7 @@ public class AuthController {
                 .body(jwtAuthResponse); // Return the JWT token in the response body);
     }
 
+    @UserAuditableAction(action = "LOGIN")
     @PostMapping("/login")
     public ResponseEntity<JwtAuthResponse> loginUser(@RequestBody UserLoginRequest request) {
         String jwtToken = jwtService.authentication(request.getEmail(), request.getPassword());

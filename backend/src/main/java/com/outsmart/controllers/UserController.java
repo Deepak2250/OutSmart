@@ -1,36 +1,56 @@
 // controller/UserController.java
 package com.outsmart.controllers;
-import com.outsmart.dto.UserProfileDTO;
-import com.outsmart.services.PasswordResetService;
-import com.outsmart.services.UserService;
+import com.outsmart.annotations.UserAuditableAction;
+import com.outsmart.dto.UserAuditLogResponse;
+import com.outsmart.payload.users.UserProfileDTO;
+import com.outsmart.payload.users.UserUpdateRequest;
+import com.outsmart.services.feature.PasswordResetService;
+import com.outsmart.services.user.UserService;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/user")
-@PreAuthorize("hasAuthority('USER')")
+@PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private PasswordResetService passwordResetService;
+    private final UserService userService;
+    private final PasswordResetService passwordResetService;
 
     @GetMapping("/profile")
-    public ResponseEntity<UserProfileDTO> getUserProfile(Authentication authentication) {
-        UserProfileDTO profile = userService.getUserProfile(authentication);
+    public ResponseEntity<UserProfileDTO> getUserProfile() {
+        UserProfileDTO profile = userService.getUserProfile();
         return ResponseEntity.ok(profile);
     }
 
+
+    @UserAuditableAction(action = "DELETE_ACCOUNT")
     @DeleteMapping("/delete")
-    public ResponseEntity<String> deleteUserAccount(Authentication authentication) {
-        userService.deleteUserByEmail(authentication);
+    public ResponseEntity<String> deleteUserAccount() {
+        userService.deleteUserByEmail();
         return ResponseEntity.ok("User account deleted successfully.");
     }
+
+    @UserAuditableAction(action = "UPDATE_PROFILE")
+    @PutMapping("/update")
+    public ResponseEntity<UserProfileDTO> updateUser(@Valid @RequestBody UserUpdateRequest request) {
+             userService.updateUserProfile( request);
+        UserProfileDTO updatedUserProfile = userService.getUserProfile();
+        return ResponseEntity.ok().body(updatedUserProfile);
+    }
+
+        @GetMapping("/recent")
+        public ResponseEntity<List<UserAuditLogResponse>> getUserRecentActivity() {
+          List<UserAuditLogResponse> response = userService.getUserAuditLog();
+            return ResponseEntity.ok(response);
+    }
+
+
 
 }

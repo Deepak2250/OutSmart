@@ -1,12 +1,11 @@
 package com.outsmart.entities;
 
-import com.outsmart.repositories.UserPlanRepository;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -22,7 +21,8 @@ public class UserPlan {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_email")
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
     private UserEntity user;
 
     @ManyToOne
@@ -47,6 +47,7 @@ public class UserPlan {
                 user.getPlans().forEach(up -> {
                     if (up.getIsActive() && !Objects.equals(up.getId(), this.id)) {
                         up.setIsActive(false);
+                        up.setDeactivatedAt(LocalDateTime.now());
                     }
                 });
             }

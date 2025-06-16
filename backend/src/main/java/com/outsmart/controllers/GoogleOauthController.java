@@ -1,13 +1,13 @@
 package com.outsmart.controllers;
 
+import com.outsmart.annotations.UserAuditableAction;
 import com.outsmart.dto.JwtAuthResponse;
-import com.outsmart.services.GoogleOauthservice;
+import com.outsmart.services.auth.GoogleOauthservice;
 
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +29,7 @@ public class GoogleOauthController {
      * @param code the authorization code provided by Google
      * @return JWT token if authentication is successful
      */
+    @UserAuditableAction(action = "LOGIN_GOOGLE")
     @GetMapping("/callback")
     public ResponseEntity<JwtAuthResponse> handleGoogleCallback(@RequestParam("code") String code) {
         String decodedCode = URLDecoder.decode(code, StandardCharsets.UTF_8);

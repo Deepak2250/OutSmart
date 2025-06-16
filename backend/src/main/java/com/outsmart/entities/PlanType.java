@@ -9,5 +9,6 @@ package com.outsmart.entities;
 public enum PlanType {
     FREE,
     BASIC,
-    PRO
+    PRO,
+    EXTREME
 } 

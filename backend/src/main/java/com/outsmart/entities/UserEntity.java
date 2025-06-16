@@ -51,10 +51,20 @@ public class UserEntity {
 
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
+    @Column(name = "description" , columnDefinition = "TEXT")
+    private String description;
 
-    @OneToMany(mappedBy = "user")
+    @Column(name = "profession" )
+    private String profession;
+
+    @Column(name = "location")
+    private String location;
+
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL)
+    @JsonManagedReference
     private Set<UserPlan> plans;
-
 
 }
