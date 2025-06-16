@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Check, Star, Upload, Crown, Zap, Shield, BarChart2, Rocket } from 'lucide-react';
 import { Button } from '../Components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../Components/ui/card';
 import { Badge } from '../Components/ui/badge';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthProvider';
+import { useToast } from '../hooks/use-toast';
+import { getToken } from '../utils/Auth';
+import { getApiUrl } from '../config';
+import { API_ENDPOINTS } from '../config';
+import ActionDialog from '../Components/ActionDialog';
 
 const PricingSection = () => {
   const navigate = useNavigate();
-
+  const { user , isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogAction, setDialogAction] = useState('purchase'); // 'purchase' | 'cancel' | 'delete'
+  const [loading, setLoading] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const plans = [
     {
       name: "FREE TIER",
@@ -28,7 +39,7 @@ const PricingSection = () => {
       uploadLimit: 1
     },
     {
-      name: "JOB SEEKER",
+      name: "BASIC",
       price: "₹100",
       icon: <Upload className="w-5 h-5 text-blue-600" />,
       period: "one-time",
@@ -48,7 +59,7 @@ const PricingSection = () => {
       ribbon: "MOST POPULAR"
     },
     {
-      name: "CAREER BOOST",
+      name: "PRO",
       price: "₹150",
       icon: <Crown className="w-5 h-5 text-purple-600" />,
       period: "one-time",
@@ -70,13 +81,105 @@ const PricingSection = () => {
     }
   ];
 
-  const handlePlanSelection = (plan) => {
-    console.log(`Selected plan: ${plan.name}`);
-    // Add your purchase logic here
+  const handleDialogConfirm = async (plan) => {
+    if(!isAuthenticated){
+      toast({
+        title: 'Please login to purchase a plan',
+        variant: 'destructive',
+      });
+      return;
+    }
+    const { remainingChances, active, planType } = user;
+  
+    // 🟢 FREE TIER Handling
+    if (planType === 'FREE TIER') {
+      if (remainingChances <= 0) {
+        toast({
+          title: 'Free plan exhausted. Please upgrade.',
+          variant: 'destructive',
+        });
+        return;
+      }
+      toast({
+        title: 'Free access granted. Redirecting...',
+        variant: 'success',
+      });
+      navigate('/');
+      return;
+    }
+  
+    // 🔴 Prevent multiple paid plans or same plan re-purchase
+    if (active && planType !== 'FREE') {
+      if (plan.name === planType) {
+        toast({
+          title: `You already have the ${plan.name} plan active.`,
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: `You already have an active ${planType} plan. Please cancel it before switching.`,
+          variant: 'destructive',
+        });
+      }
+      return;
+    }
+  
+    setLoading(true);
+    setDialogOpen(true);
+  
+    try {
+      const {token} = getToken();
+      const response = await fetch(getApiUrl(API_ENDPOINTS.plan.purchase), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ planType: plan.name }),
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Something went wrong');
+      }
+  
+      toast({
+        title: `${plan.name} Plan Activated!`,
+        variant: 'success',
+      });
+      navigate('/');
+    } catch (error) {
+      const errorMsg = error.message;
+  
+      if (errorMsg.includes('already have an active plan')) {
+        toast({
+          title: 'You already have an active plan. Please cancel it before purchasing a new one.',
+          variant: 'destructive',
+        });
+      } else if (errorMsg.includes('already have this plan')) {
+        toast({
+          title: 'This plan is already active.',
+          variant: 'destructive',
+        });
+      } else if (errorMsg.includes('Downgrade') || errorMsg.includes('not allowed')) {
+        toast({
+          title: 'Downgrade or re-purchase of the same plan is not allowed.',
+          variant: 'destructive',
+        });
+      } else {
+        toast({
+          title: errorMsg || 'Something went wrong. Try again.',
+          variant: 'destructive',
+        });
+      }
+    }
+    setLoading(false);
+    setDialogOpen(false);
   };
+  
 
   return (
-    <div className="min-h-screen theme-bg">
+    <><div className="min-h-screen theme-bg">
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <button 
@@ -148,7 +251,11 @@ const PricingSection = () => {
                   </ul>
 
                   <Button
-                    onClick={() => handlePlanSelection(plan)}
+                    onClick={() => {
+                      setDialogAction('purchase');
+                      setDialogOpen(true);
+                      setSelectedPlan(plan);
+                    }}
                     className={`w-full py-2 sm:py-3 font-semibold transition-all duration-300 text-sm sm:text-base ${
                       plan.popular
                         ? 'bg-blue-600 text-white hover:bg-blue-700'
@@ -175,13 +282,20 @@ const PricingSection = () => {
                 </div>
               </div>
               <p className="theme-text opacity-70 text-sm sm:text-base max-w-2xl">
-                "After using ResumeAI, I received 3x more interview calls. The ATS optimization made all the difference!" - Priya K., Marketing Specialist
+                "After using OutSmart, I received 3x more interview calls. The ATS optimization made all the difference!" - Priya K., Marketing Specialist
               </p>
             </div>
           </div>
         </div>
       </section>
     </div>
+    <ActionDialog
+    open={dialogOpen}
+    onOpenChange={setDialogOpen}
+    actionType={dialogAction}
+    plan={selectedPlan}
+    loading={loading}
+    onConfirm={handleDialogConfirm} /></>
   );
 };
 

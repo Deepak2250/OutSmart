@@ -30,10 +30,19 @@ export const API_ENDPOINTS = {
   },
   user: {
     profile: '/api/user/profile',
-    updateProfile: '/api/user/profile/update',
+    update: '/api/user/update',
     requestOTP: '/api/auth/request-otp',
     verifyOTP: '/api/auth/verify-otp',
-    preferences: '/api/user/preferences'
+    delete: '/api/user/delete',
+    recent: '/api/user/recent'
+  },
+  plan: {
+    purchase: '/api/plan/purchase',
+    cancel: '/api/plan/cancel'
+  },
+  admin: {
+    users: '/api/admin/users',
+    plans: '/api/admin/plans'
   }
 };
 

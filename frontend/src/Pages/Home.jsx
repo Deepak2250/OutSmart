@@ -19,6 +19,7 @@ import { useAuth } from '../context/AuthProvider';
 import AuthModal from '../Components/AuthModal';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+
 const Home = () => {
   const [isLoading, setIsLoading] = useState(() => {
     // Check if this is the first load or a page refresh
@@ -34,7 +35,7 @@ const Home = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const fileInputRef = useRef(null);
   const { toast } = useToast();
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, role } = useAuth();
   const [showAuthModal, setShowAuthModal] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
@@ -335,6 +336,9 @@ const Home = () => {
                 <button onClick={() => scrollToSection('about')} className="theme-text opacity-70 hover:opacity-100 transition-colors font-medium text-sm lg:text-base">About</button>
                 <button onClick={() => scrollToSection('pricing')} className="theme-text opacity-70 hover:opacity-100 transition-colors font-medium text-sm lg:text-base">Pricing</button>
                 <button onClick={() => navigate('/purchase')} className="theme-text opacity-70 hover:opacity-100 transition-colors font-medium text-sm lg:text-base">Purchase</button>
+                {isAuthenticated && Array.isArray(role) && role.includes('ADMIN')  && (
+                  <button onClick={() => navigate('/admin')} className="theme-text opacity-70 hover:opacity-100 transition-colors font-medium text-sm lg:text-base">Admin</button>
+                )}
                 <ThemeSwitcher />
                 {isAuthenticated ? (
   <Button
@@ -410,6 +414,11 @@ const Home = () => {
                   >
                     Purchase
                   </button>
+                  {isAuthenticated && Array.isArray(role) && role.includes('ADMIN')  && (
+                    <button onClick={() => navigate('/admin')} className="theme-text opacity-70 hover:opacity-100 transition-colors font-medium text-base py-2">
+                      Admin
+                    </button>
+                  )}
                   {isAuthenticated ? (
                     <Button
                       onClick={() => {

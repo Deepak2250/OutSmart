@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { getToken, isTokenExpired, clearToken } from '../utils/Auth';
 import { toast } from "sonner";
 import { getApiUrl, API_ENDPOINTS, DEFAULT_HEADERS } from '../config';
+import { jwtDecode } from "jwt-decode";
+
+
 
 // Create a context for authentication
 export const AuthContext = createContext();
@@ -14,10 +17,13 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [intervalId, setIntervalId] = useState(null);
+  const [role, setRole] = useState([]);
+  const {token} = getToken();
 
   const logout = () => {
     clearToken();
     setIsAuthenticated(false);
+    setRole(null);
     setUser(null);
     if (intervalId) {
       clearInterval(intervalId);
@@ -27,13 +33,13 @@ export const AuthProvider = ({ children }) => {
     toast.success("Logged out successfully");
   };
 
-  const fetchUserProfile = async (token) => {
+  const fetchUserProfile = async (jwtToken) => {
     try {
       const response = await fetch(getApiUrl(API_ENDPOINTS.user.profile), {
         method: 'GET',
         headers: {
           ...DEFAULT_HEADERS,
-          'Authorization': `Bearer ${token}`
+          'Authorization': `Bearer ${jwtToken}`
         }
       });
 
@@ -63,12 +69,13 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkAuthStatus = async () => {
       console.log("Checking auth status...");
-      const tokenData = getToken();
       
-      if (tokenData && !isTokenExpired()) {
+      if (token && !isTokenExpired()) {
+        const decoded = jwtDecode(token);
+        setRole(prev => (prev !== decoded.roles ? decoded.roles : prev)); // ✅ only if changed
         if (!isAuthenticated || !user) {
           console.log("Token valid, fetching profile...");
-          await fetchUserProfile(tokenData.token);
+          await fetchUserProfile(token);
         }
       } else {
         if (isAuthenticated) {
@@ -107,7 +114,8 @@ export const AuthProvider = ({ children }) => {
         user,
         setUser,
         logout,
-        fetchUserProfile
+        fetchUserProfile,
+        role
       }}
     >
       {children}
